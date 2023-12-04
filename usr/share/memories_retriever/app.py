@@ -11,7 +11,6 @@ import base64
 import requests
 from urllib.parse import urlparse, unquote
 import os
-import shutil
 
 from src.components.memory import picture, video
 from src.components.folder import create_folder_item, load_folders, giga_usage_to_string
@@ -102,55 +101,38 @@ def import_memories(n_clicks, hidden_n_clicks, memories, memory_id, start_from):
 
 # Callback pour ajouter un dossier
 @app.callback(
-    [
-        Output('folder-list', 'children'), 
-        Output('alert-warning-add-folder', 'is_open'), 
-        Output('alert-warning-add-folder', 'children'), 
-        Output('folder-tree-panel', 'style'), 
-        Output('file-input-panel', 'style'),
-        Output('username-input', 'disabled')
-    ],
-    [Input('add-folder-btn', 'n_clicks'), Input('url', 'pathname'), Input('username-input', 'value')],
+    [Output('folder-list', 'children'), Output('alert-warning-add-folder', 'is_open'), Output('alert-warning-add-folder', 'children')],
+    [Input('add-folder-btn', 'n_clicks'), Input('url', 'pathname')],
     [State('folder-list', 'children'), State('folder-name', 'value')]
 )
-def add_folder(n_clicks, url, username,folder_list, folder_name):
+def add_folder(n_clicks, url, folder_list, folder_name):
     if callback_context.triggered_id == 'url':
-            return no_update, no_update, no_update, {'display' : 'none'}, {'display' : 'none'}, no_update
-
-    if callback_context.triggered_id == 'username-input':
-        user_folders = os.listdir(os.environ.get('output_path'))
-        if username in user_folders:
-            return load_folders(username), no_update, no_update, {'display' : 'block'}, {'display' : 'block'}, True
+            return load_folders(), no_update, no_update
 
     if n_clicks:
         fn = folder_name if folder_name else 'Nouveau dossier'
 
-        path = os.environ.get('output_path') + username + '/' + fn + '/'
+        path = os.environ.get('output_path') + fn + '/'
 
         if fn in ['.', 'Corbeille']:
-            return no_update, True, 'Impossible de créer un dossier avec ce nom', no_update, no_update, no_update
+            return no_update, True, 'Impossible de créer un dossier avec ce nom'
         
         if os.path.exists(path):
-            return no_update, True, 'Un dossier avec ce nom existe déjà', no_update, no_update, no_update
+            return no_update, True, 'Un dossier avec ce nom existe déjà'
 
         folder_list.append(create_folder_item(fn))
 
         try:
             os.mkdir(path)
         except OSError  as e:
-            return no_update, True, e.strerror, no_update, no_update, no_update
+            return no_update, True, e.strerror
 
-        return folder_list, False, no_update, no_update, no_update, no_update
-    return no_update, no_update, no_update, no_update, no_update, no_update
+        return folder_list, False, no_update
+    return no_update, no_update, no_update
 
 # Callback pour gérer les clics sur les dossiers
 @app.callback(
-    [
-        Output('import-btn-hidden', 'n_clicks'), 
-        Output({'type': 'folder-count', 'index': ALL}, 'children'), 
-        Output('alert-warning-folder-click', 'is_open'), 
-        Output('alert-warning-folder-click', 'children'), 
-        Output('folder-tree-disk-usage', 'children')],
+    [Output('import-btn-hidden', 'n_clicks'), Output({'type': 'folder-count', 'index': ALL}, 'children'), Output('alert-warning-folder-click', 'is_open'), Output('alert-warning-folder-click', 'children'), Output('folder-tree-disk-usage', 'children')],
     [Input({'type': 'folder-link', 'index': ALL}, 'n_clicks')],
     [
         State('import-btn-hidden', 'n_clicks'),
@@ -158,13 +140,12 @@ def add_folder(n_clicks, url, username,folder_list, folder_name):
         State({'type': 'folder-count', 'index': ALL}, 'children'),
         State({'type': 'folder-count', 'index': ALL}, 'id'),
         State({'type': 'folder-link', 'index': ALL}, 'id'),
-        State('username-input', 'value')
     ],
     prevent_initial_call=True
 )
-def on_folder_click(n_clicks, n_clicks_hidden, current_memory, count, count_ids, folder_ids, username):
+def on_folder_click(n_clicks, n_clicks_hidden, current_memory, count, count_ids, folder_ids):
     ctx = callback_context
-    path = os.environ.get('output_path') + username + '/'
+    path = os.environ.get('output_path')
 
     if n_clicks == [] or callback_context.triggered_id['index'] == '.':
         return no_update, [no_update for el in count], no_update, no_update, no_update
@@ -173,37 +154,24 @@ def on_folder_click(n_clicks, n_clicks_hidden, current_memory, count, count_ids,
         try:
             os.remove(current_memory['name'])
         except:
-            return no_update, [no_update for el in count], True, 'Impossible de supprimer ce fichier', giga_usage_to_string(username)
+            return no_update, [no_update for el in count], True, 'Impossible de supprimer ce fichier', no_update
 
-        return n_clicks_hidden + 1, count, no_update, no_update, giga_usage_to_string(username)
+        return n_clicks_hidden + 1, count, no_update, no_update, no_update
     else:
         folder_name = ctx.triggered_id['index']
         folder_path = path + folder_name + '/'
 
         if os.path.exists(folder_path + current_memory['name'].split('/')[-1]):
-            return no_update, [no_update for el in count], True, 'Ce fichier existe déjà dans ce dossier', giga_usage_to_string(username)
+            return no_update, [no_update for el in count], True, 'Ce fichier existe déjà dans ce dossier'
 
-        shutil.move(current_memory['name'], folder_path + current_memory['name'].split('/')[-1])
+        os.rename(current_memory['name'], folder_path + current_memory['name'].split('/')[-1])
 
         for i in range(len(count_ids)):
             if count_ids[i]['index'] == folder_name:
                 count[i] = str(os.listdir(folder_path).__len__())
                 break
 
-        return n_clicks_hidden + 1, count, no_update, no_update, giga_usage_to_string(username)
-
-@app.callback(
-    Output('download-memories', 'data'),
-    Input('export-btn', 'n_clicks'),
-    State('username-input', 'value')
-)
-def export_memories(n_clicks, username):
-    if n_clicks:
-        path = os.environ.get('output_path') + username
-        shutil.make_archive(path, 'zip', path)
-        return dcc.send_file(path + '.zip')
-
-    return no_update
+        return n_clicks_hidden + 1, count, no_update, no_update, giga_usage_to_string()
 
 # Fonction pour télécharger un fichier
 def download_memory(url, filename):
@@ -226,4 +194,4 @@ def count_clicked_folder(n_clicks):
 
 # Point d'entrée principal
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True)

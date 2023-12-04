@@ -10,5 +10,5 @@ def video(source):
     with open(source, 'rb') as video_file:
         encoded_video = base64.b64encode(video_file.read()).decode('ascii')
     return html.Div([
-        html.Video(src=f'data:video/mp4;base64,{encoded_video}', className='video', controls=True, autoPlay=True)
+        html.Video(src=f'data:video/mp4;base64,{encoded_video}', className='video', controls=True)
     ], className='video-container')

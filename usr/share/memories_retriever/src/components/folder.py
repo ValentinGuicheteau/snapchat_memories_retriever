@@ -6,10 +6,11 @@ import shutil
 def folder_tree_panel():
     return dbc.Card(
         [
-            dbc.CardHeader(['Arborescence des dossiers', html.Span('', id='folder-tree-disk-usage', className='float-right')], className='d-flex justify-content-between align-items-center'),
+            dbc.CardHeader(['Arborescence des dossiers', html.Span(giga_usage_to_string(), id='folder-tree-disk-usage', className='float-right')], className='d-flex justify-content-between align-items-center'),
             dbc.CardBody(
                 [
-                    dbc.ListGroup( 
+                    dbc.ListGroup(    
+                        load_folders(),
                         id="folder-list",
                     ),
                     # text for folder name
@@ -17,7 +18,6 @@ def folder_tree_panel():
                         children = [
                             dbc.Input(id="folder-name", placeholder="Nom du dossier", type="text", className="mt-2"),
                             dbc.Button(html.I(className="fas fa-add"), id="add-folder-btn", color="primary", className="mt-2"),  
-                            dbc.Button('Exporter les mémories', id='export-btn', color='primary', className='mt-2', disabled=False)
                         ],
                         id="add-folder-content"
                     )
@@ -25,8 +25,7 @@ def folder_tree_panel():
                 ]
             ),
         ],
-        id='folder-tree-panel',
-        className='left-panels'
+        id='folder-tree-panel'
     )
 
 # Function to create a folder item
@@ -48,12 +47,11 @@ def create_folder_item(folder_name, is_hidden=False, folder_count=0):
         style={"display": "none"} if is_hidden else {},
     )
 
-def load_folders(username):
+def load_folders():
     path = os.environ.get('output_path')
-    path += username + '/'
     folders = os.listdir(path)
 
-    folder_list = [create_folder_item('.'),create_folder_item('Corbeille'), create_folder_item('exports', is_hidden=True)]
+    folder_list = [create_folder_item('.'),create_folder_item('Corbeille')]
     for folder in folders:
 
         # count number of files in folder
@@ -63,8 +61,8 @@ def load_folders(username):
 
     return folder_list
 
-def giga_usage_to_string(username):
-    path = os.environ.get('output_path') + username + '/'
+def giga_usage_to_string():
+    path = os.environ.get('output_path')
     
     # get folder size
     total_size = 0

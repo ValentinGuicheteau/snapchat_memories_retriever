@@ -36,10 +36,13 @@
     width: 100%;
 }
 
-.left-panels{
+#file-input-panel{
     margin: 1%;
 }
 
+#folder-tree-panel{
+    margin: 1%;
+}
 
 #left-content{
     width: 35% !important;
@@ -75,10 +78,6 @@
     margin-left: 1%;
 }
 
-#export-btn{
-    margin-left: 1%;
-}
-
 #folder-name{
     width: 50%;
 }
@@ -108,9 +107,4 @@
 #folder-list{
     overflow-y: scroll;
     max-height: 400px;
-}
-
-#username-input-container{
-    width: 50%;
-    margin: 1%;
 }

@@ -40,6 +40,4 @@ def file_input_panel():
 
         ])
 
-    ], id='file-input-panel',
-        className='left-panels'
-)
+    ], id='file-input-panel')

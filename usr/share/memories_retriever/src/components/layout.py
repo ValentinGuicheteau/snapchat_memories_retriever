@@ -19,7 +19,6 @@ def layout():
                 dcc.Store(id='memories-store', storage_type='memory', data={}),
                 dcc.Store(id='memory-id', storage_type='memory', data={'id': 0}),
                 dcc.Store(id='current-memory', storage_type='memory', data={}),
-                dcc.Download(id='download-memories'),
                 
                 html.Button(id='import-btn-hidden', style={'display': 'none'}, n_clicks=0),
 
@@ -29,14 +28,14 @@ def layout():
                 dbc.Alert('', id='alert-danger-import', color='danger', is_open=False, duration=4000, style={'position': 'fixed', 'bottom': '1rem', 'right': '1rem'}),
             ]
         ),
+
         
         html.H1(children='Sauvegarde de memories', style={'padding' : '1rem'}),
-        
+
         html.Div(
             children=[
                 html.Div(
                     children=[
-                        html.Div(dbc.Input(id='username-input', placeholder='Nom d\'utilisateur', type='text', className='mt-2'), id='username-input-container'),
                         file_input_panel(),
                         folder_tree_panel()
                     ],
