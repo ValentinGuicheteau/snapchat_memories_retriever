@@ -194,4 +194,4 @@ def count_clicked_folder(n_clicks):
 
 # Point d'entrée principal
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
