@@ -39,5 +39,9 @@ The hosted version supports multiple user sessions, enabling multiple users to s
 3. Organize, view, and manage your memories within the application.
 4. Export your memories as needed for backup purposes.
 
+
+## Screenshots 
+![Alt text](image.png)
+
 ## Contributing
 Contributions to enhance the application are welcome. For major changes, please open an issue first to discuss what you would like to change.
