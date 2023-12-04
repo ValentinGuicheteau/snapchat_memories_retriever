@@ -1,0 +1,116 @@
+#file-input-content{
+    width: 25%;
+}
+
+#main-content{
+    width: 100%;
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    flex-direction: column;
+}
+
+.row-content{
+    display: flex;
+    flex-direction: row;
+}
+
+
+#memories-file-upload{
+    width: 100%;
+    height: 40px;
+    border-radius: 5px;
+    border: 1px dashed lightgrey;
+    text-align: center;
+    line-height: 40px;
+}
+
+#file-type{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+
+}
+
+#import-btn{
+    width: 100%;
+}
+
+.left-panels{
+    margin: 1%;
+}
+
+
+#left-content{
+    width: 35% !important;
+    height: 100%;
+    padding: 1%;
+}
+
+.folder-item{
+    color: grey;
+    text-decoration: none;
+}
+
+.folder-item:hover{
+    color: black;
+    text-decoration: none;
+    transform: scale(1.1);
+}
+
+.picture{
+    width: 360px;
+}
+
+.video{
+    width: 360px;
+}
+
+#add-folder-content{
+    display: flex;
+    flex-direction: row;
+}
+
+#add-folder-btn{
+    margin-left: 1%;
+}
+
+#export-btn{
+    margin-left: 1%;
+}
+
+#folder-name{
+    width: 50%;
+}
+
+.loading-container{
+    display: flex;
+    position: fixed;
+    width: 100vw;
+    height: 200vh;
+    justify-content: center;
+    align-items: center;
+    background-color: grey;
+    opacity: 0.25;
+    z-index: 10000;
+}
+
+#right-content{
+    width: 30% !important;
+    padding: 1%;
+}
+
+#map{
+    width: 100%;
+    height: 100%;
+}
+
+#folder-list{
+    overflow-y: scroll;
+    max-height: 400px;
+}
+
+#username-input-container{
+    width: 50%;
+    margin: 1%;
+}
